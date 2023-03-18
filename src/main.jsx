@@ -3,10 +3,9 @@ import "./style.css";
 import App from "./App.jsx";
 import React from "react";
 import ReactDOM from "react-dom/client";
+import MyWorker from './worker.js?worker'
 
-const worker = new Worker(new URL("./worker.js", import.meta.url), {
-	type: "module",
-});
+const worker = new MyWorker();
 
 ReactDOM.createRoot(document.getElementById("app")).render(
 	<React.StrictMode>
