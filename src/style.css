@@ -240,14 +240,16 @@ button.small {
 	text-overflow: ellipsis;
 }
 
-
-
-@media only screen and (min-width : 768px) {
+@media only screen and (min-width: 768px) {
+	
 	.card {
 		margin: 2em;
 	}
-}
 
+	.truncate {
+		width: 300px;
+	}
+}
 
 button {
 	white-space: nowrap;
@@ -256,5 +258,5 @@ button {
 .footer {
 	display: flex;
 	flex-direction: column;
-	gap: .6em;
+	gap: 0.6em;
 }
