@@ -72,7 +72,7 @@ export function FileListView({ files }) {
 							{file.type.split("/")[1]}
 							{" → "}
 							{format.toLowerCase()}
-							{blob ? <span>{"\u30fb"} <span className="color-primary">{prettyBytes(blob.size)}</span></span> : ""}
+							{blob ? <span>{"\u30fb"}<span className="color-primary">{prettyBytes(blob.size)}</span></span> : ""}
 						</div>
 					</div>
 					{!ready && !failed ? <span class="loader"></span> : null}
