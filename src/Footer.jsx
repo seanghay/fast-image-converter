@@ -1,6 +1,7 @@
 export default function Footer() {
 	return (
 		<>
+
 			<footer className="footer">
 				<p className="text-center color-secondary">
 					Supported formats (.avif, .webp, .jpg, .png)
@@ -12,7 +13,9 @@ export default function Footer() {
 						@seanghay
 					</a>
 				</p>
+
 			</footer>
+
 		</>
 	);
 }

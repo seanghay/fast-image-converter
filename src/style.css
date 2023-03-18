@@ -241,7 +241,6 @@ button.small {
 }
 
 @media only screen and (min-width: 768px) {
-	
 	.card {
 		margin: 2em;
 	}
@@ -259,4 +258,26 @@ button {
 	display: flex;
 	flex-direction: column;
 	gap: 0.6em;
+}
+
+.loader {
+	margin-top: 4px;
+	margin-right: 8px;
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	display: inline-block;
+	border-top: 2px solid hsl(0, 0%, 70%);
+	border-right: 2px solid transparent;
+	box-sizing: border-box;
+	animation: rotation 0.8s linear infinite;
+}
+
+@keyframes rotation {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
 }

@@ -72,17 +72,19 @@ export function FileListView({ files }) {
 							{file.type.split("/")[1]}
 							{" → "}
 							{format.toLowerCase()}
-							{blob ? "\u30fb" + prettyBytes(blob.size) : ""}
+							{blob ? <span>{"\u30fb"} <span className="color-primary">{prettyBytes(blob.size)}</span></span> : ""}
 						</div>
 					</div>
-
-					<button
-						onClick={() => saveAs(blob, filename)}
-						className="small secondary"
-						disabled={!ready}
-					>
-						{ready ? "Download" : failed ? "Failed 🙁" : "Processing…"}
-					</button>
+					{!ready && !failed ? <span class="loader"></span> : null}
+					{ready || failed ? (
+						<button
+							onClick={() => saveAs(blob, filename)}
+							className="small secondary"
+							disabled={!ready}
+						>
+							{ready ? "Download" : failed ? "Failed 🙁" : "Processing…"}
+						</button>
+					) : null}
 				</div>
 			))}
 		</div>
