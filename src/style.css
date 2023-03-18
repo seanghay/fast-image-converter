@@ -37,11 +37,17 @@ h1 {
 }
 
 .card {
-	margin: 2em;
+	margin: 1rem;
 	background-color: white;
-	border: 1px solid #eaeef1;
 	border-radius: 1rem;
-	box-shadow: 1px 0px 3px rgba(0, 0, 0, 0.05);
+	border: 1px solid rgba(0, 0, 0, 0.05);
+	box-shadow: 0 0 50px -10px rgba(0, 0, 0, 0.08);
+	transition: 0.25s ease-in-out;
+}
+
+body.drag-over .card {
+	box-shadow: 0 0 50px -5px mediumseagreen;
+	border-color: mediumseagreen;
 }
 
 .card-body {
@@ -137,6 +143,10 @@ button.small {
 	padding: 0.8em 1.4em;
 }
 
+.files .file:last-child {
+	border-bottom: none;
+}
+
 .files .file .file-info {
 	font-size: 1rem;
 	color: slategray;
@@ -212,55 +222,28 @@ button.small {
 	font-weight: 700;
 }
 
-
 .text-sm {
 	font-size: 10px;
-
 }
 
 .format-container {
 	display: flex;
 	flex-direction: column;
-	gap: .2rem;
-	margin-top: .4rem;
+	gap: 0.2rem;
+	margin-top: 0.4rem;
+}
+
+.truncate {
+	width: 250px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 
-body.drag-over .drag-over-content {
-	display: flex;
-}
 
-body {
-	position: relative;
-}
-
-.drag-over-content {
-	transition: .2s ease;
-	display: none;
-	position: fixed;
-	top:0;
-	left: 0;
-	bottom: 0;
-	right: 0;
-	margin: 0;
-	padding: 1em;
-	background-color: rgba(60, 180, 114, .2);
-	z-index: 10;
-	align-items: center;
-	justify-content: center;
-}
-
-.drag-over-card {
-	font-size: 1.2rem;
-	padding: 1em 1.4em;
-	background-color: white;
-	border-radius: .6rem;
-	box-shadow: 2px 4px 20px rgba(0, 00, 0, .05);
-	color: mediumseagreen;
-	align-items: center;
-	justify-content: center;
-	display: flex;
-	flex-direction: column;
-	font-weight: normal;
-	gap: .4em;
+@media only screen and (min-width : 768px) {
+	.card {
+		margin: 2em;
+	}
 }
