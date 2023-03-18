@@ -3,6 +3,7 @@ import React, { useEffect, useId, useRef, useState } from "react";
 import prettyBytes from "pretty-bytes";
 import { nanoid } from "nanoid";
 import { saveAs } from "file-saver";
+import Footer from "./Footer.jsx";
 
 function AppIcon() {
 	return (
@@ -74,12 +75,13 @@ export function FileListView({ files }) {
 							{blob ? "\u30fb" + prettyBytes(blob.size) : ""}
 						</div>
 					</div>
+
 					<button
 						onClick={() => saveAs(blob, filename)}
-						className="small light"
+						className="small secondary"
 						disabled={!ready}
 					>
-						{ready ? "Download" : failed ? "Failed 🙁" : "Processing"}
+						{ready ? "Download" : failed ? "Failed 🙁" : "Processing…"}
 					</button>
 				</div>
 			))}
@@ -88,7 +90,7 @@ export function FileListView({ files }) {
 }
 
 export default function App({ worker }) {
-	const formats = ["JPEG", "PNG", "WEBP", "AVIF"];
+	const formats = ["JPEG", "PNG"];
 	const [format, setFormat] = useState(formats[0]);
 	const [files, setFiles] = useState([]);
 	const fileRef = useRef(null);
@@ -208,12 +210,14 @@ export default function App({ worker }) {
 								className="secondary"
 								onClick={saveAllFiles}
 							>
-								Download all ({totalReadyCount})
+								Download all
 							</button>
 						</div>
 					</div>
 				) : null}
 			</div>
+
+			<Footer />
 		</div>
 	);
 }

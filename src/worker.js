@@ -1,19 +1,39 @@
-import './engine.js'
+import { encode as encode_png, decode as decode_png } from '@jsquash/png';
+import { encode as encode_jpeg, decode as decode_jpeg } from '@jsquash/jpeg';
+import { decode as decode_webp } from '@jsquash/webp';
+import avif_dec from '@jsquash/avif/codec/dec/avif_dec.js';
+import { initEmscriptenModule } from '@jsquash/avif/utils.js'
+
+let emscriptenModuleAVIF;
+
+export async function decode_avif(buffer) {
+  if (!emscriptenModuleAVIF) {
+    emscriptenModuleAVIF = initEmscriptenModule(avif_dec);
+  }
+  const module = await emscriptenModuleAVIF;
+  console.log(module)
+
+  const result = module.decode(buffer);
+
+  if (!result)
+    throw new Error('Decoding error');
+  return result;
+}
+
 
 addEventListener("message", async ({ data }) => {
 
   const encoders = {
     png: encode_png,
-    webp: encode_webp,
+    // webp: encode_webp,
     jpeg: encode_jpeg,
-    avif: encode_avif
   }
 
   const decoders = {
     png: decode_png,
     webp: decode_webp,
     jpeg: decode_jpeg,
-    avif: decode_avif,
+    avif: decode_avif
   }
 
   const extensions = {
