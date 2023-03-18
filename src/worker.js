@@ -1,8 +1,17 @@
+// shim
+self.document = {
+  currentScript: null,
+  baseURI: self.location.origin + "/"
+}
+
+
 import { encode as encode_png, decode as decode_png } from '@jsquash/png';
 import { encode as encode_jpeg, decode as decode_jpeg } from '@jsquash/jpeg';
 import { decode as decode_webp } from '@jsquash/webp';
 import avif_dec from '@jsquash/avif/codec/dec/avif_dec.js';
 import { initEmscriptenModule } from '@jsquash/avif/utils.js'
+
+
 
 let emscriptenModuleAVIF;
 
