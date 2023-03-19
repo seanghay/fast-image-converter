@@ -75,7 +75,7 @@ export function FileListView({ files }) {
 							{blob ? <span>{"\u30fb"}<span className="color-primary">{prettyBytes(blob.size)}</span></span> : ""}
 						</div>
 					</div>
-					{!ready && !failed ? <span class="loader"></span> : null}
+					{!ready && !failed ? <span className="loader"></span> : null}
 					{ready || failed ? (
 						<button
 							onClick={() => saveAs(blob, filename)}

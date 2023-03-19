@@ -5,6 +5,7 @@ import { decode as decode_webp } from '@jsquash/webp';
 import avif_dec from '@jsquash/avif/codec/dec/avif_dec.js';
 import { initEmscriptenModule } from '@jsquash/avif/utils.js'
 
+
 let emscriptenModuleAVIF;
 
 export async function decode_avif(buffer) {
