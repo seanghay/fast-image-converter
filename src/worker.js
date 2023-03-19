@@ -3,17 +3,38 @@ import { encode as encode_png, decode as decode_png } from '@jsquash/png';
 import { encode as encode_jpeg, decode as decode_jpeg } from '@jsquash/jpeg';
 import { decode as decode_webp } from '@jsquash/webp';
 import { defaultOptions as webp_defaultOptions } from '@jsquash/webp/meta.js'
+import { defaultOptions as avif_defaultOptions } from '@jsquash/avif/meta.js'
+
 import avif_dec from '@jsquash/avif/codec/dec/avif_dec.js';
+import avif_enc from '@jsquash/avif/codec/enc/avif_enc.js';
 import webp_enc from '@jsquash/webp/codec/enc/webp_enc.js';
 
 import { initEmscriptenModule } from '@jsquash/avif/utils.js'
 
 let emscriptenModuleAVIF;
+let emscriptenModuleAVIF_ENC;
 let emscriptenModuleWEBP;
+
+
+async function encode_avif(image) {
+
+  if (!emscriptenModuleAVIF_ENC) {
+    emscriptenModuleAVIF_ENC = initEmscriptenModule(avif_enc);
+  }
+
+  const module = await emscriptenModuleAVIF_ENC;
+  const result = module.encode(image.data, image.width, image.height, avif_defaultOptions);
+
+  if (!result)
+    throw new Error('Decoding error');
+
+  return result;
+}
+
 
 async function encode_webp(image) {
 
-  if (!emscriptenModuleAVIF) {
+  if (!emscriptenModuleWEBP) {
     emscriptenModuleWEBP = initEmscriptenModule(webp_enc);
   }
 
@@ -47,6 +68,7 @@ addEventListener("message", async ({ data }) => {
     png: encode_png,
     webp: encode_webp,
     jpeg: encode_jpeg,
+    avif: encode_avif,
   }
 
   const decoders = {

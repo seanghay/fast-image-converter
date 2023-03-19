@@ -101,7 +101,7 @@ export function FileListView({ files }) {
 }
 
 export default function App({ worker }) {
-	const formats = ["JPEG", "PNG", "WEBP"];
+	const formats = ["JPEG", "PNG", "WEBP", "AVIF"];
 	const [format, setFormat] = useState(formats[0]);
 	const [files, setFiles] = useState([]);
 	const fileRef = useRef(null);
