@@ -72,7 +72,16 @@ export function FileListView({ files }) {
 							{file.type.split("/")[1]}
 							{" → "}
 							{format.toLowerCase()}
-							{blob ? <span>{"\u30fb"}<span className="color-primary">{prettyBytes(blob.size)}</span></span> : ""}
+							{blob ? (
+								<span>
+									{"\u30fb"}
+									<span className="color-primary">
+										{prettyBytes(blob.size)}
+									</span>
+								</span>
+							) : (
+								""
+							)}
 						</div>
 					</div>
 					{!ready && !failed ? <span className="loader"></span> : null}
@@ -92,7 +101,7 @@ export function FileListView({ files }) {
 }
 
 export default function App({ worker }) {
-	const formats = ["JPEG", "PNG"];
+	const formats = ["JPEG", "PNG", "WEBP"];
 	const [format, setFormat] = useState(formats[0]);
 	const [files, setFiles] = useState([]);
 	const fileRef = useRef(null);
@@ -173,7 +182,7 @@ export default function App({ worker }) {
 
 					<button onClick={chooseFile}>Browse files</button>
 					<input
-						accept="image/"
+						accept="image/png,image/jpeg,image/jpg,image/webp,image/avif,image/heif,image/heif-sequence,image/heic,image/heic-sequence,application/pdf"
 						multiple
 						onChange={onFileChange}
 						type="file"
