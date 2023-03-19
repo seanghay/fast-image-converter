@@ -9,6 +9,8 @@ export default defineConfig({
       '@jsquash/jpeg',
       '@jsquash/webp',
       '@jsquash/avif',
+      // '@saschazar/wasm-heif'
+
     ]
   },
 });

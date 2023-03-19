@@ -25,6 +25,7 @@
     "@web/rollup-plugin-import-meta-assets": "^1.0.7",
     "@yireen/squoosh-browser": "^1.0.7",
     "file-saver": "^2.0.5",
+    "libheif-js": "^1.15.1",
     "lodash.debounce": "^4.0.8",
     "nanoid": "^4.0.1",
     "patch-package": "^6.5.1",

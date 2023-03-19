@@ -9,11 +9,45 @@ import avif_dec from '@jsquash/avif/codec/dec/avif_dec.js';
 import avif_enc from '@jsquash/avif/codec/enc/avif_enc.js';
 import webp_enc from '@jsquash/webp/codec/enc/webp_enc.js';
 
+import wasm_heif from "@saschazar/wasm-heif";
+import wasm_heif_url from "@saschazar/wasm-heif/wasm_heif.wasm?url";
+
 import { initEmscriptenModule } from '@jsquash/avif/utils.js'
 
 let emscriptenModuleAVIF;
 let emscriptenModuleAVIF_ENC;
 let emscriptenModuleWEBP;
+
+async function decode_heif(buffer) {
+
+  const heif_decoder = await (new Promise(r => {
+    wasm_heif({
+      locateFile: () => wasm_heif_url,
+      noInitialRun: true,
+      onRuntimeInitialized() {
+        r(this)
+      },
+    })
+  }))
+
+  const arrayBuffer = new Uint8Array(buffer);
+  const pixels = heif_decoder.decode(arrayBuffer, arrayBuffer.length, false);
+  const { width, height } = heif_decoder.dimensions();
+  const imageData = new ImageData(width, height);
+  const data = imageData.data;
+  let t = 0;
+
+  for (let i = 0; i < data.length; i += 4) {
+    data[i] = pixels[t];
+    data[i + 1] = pixels[t + 1];
+    data[i + 2] = pixels[t + 2];
+    data[i + 3] = 255;
+    t += 3;
+  }
+
+  heif_decoder.free();
+  return imageData;
+}
 
 
 async function encode_avif(image) {
@@ -76,6 +110,8 @@ addEventListener("message", async ({ data }) => {
     webp: decode_webp,
     jpeg: decode_jpeg,
     avif: decode_avif,
+    heif: decode_heif,
+    heic: decode_heif
   }
 
   const extensions = {
@@ -102,7 +138,7 @@ addEventListener("message", async ({ data }) => {
     const arr = new Uint8Array(imageData);
     const blob = new Blob([arr], { type: "image/" + target });
     const ext = extensions[target];
-    let filename = file.name.replace(/\.(jpe?g|png|webp)$/, '');
+    let filename = file.name.replace(/\.(jpe?g|png|webp|heic|heif)$/i, '');
     filename += ext;
 
     postMessage({
