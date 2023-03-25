@@ -1,7 +1,8 @@
+const timestamp = new Date(BUILD_TIMESTAMP).toUTCString()
+
 export default function Footer() {
 	return (
 		<>
-
 			<footer className="footer">
 				<p className="text-center color-secondary">
 					Supported formats (.avif, .webp, .jpg, .png)
@@ -13,9 +14,10 @@ export default function Footer() {
 						@seanghay
 					</a>
 				</p>
-
+				<p className="text-center text-sm color-secondary">
+					{timestamp}
+				</p>
 			</footer>
-
 		</>
 	);
 }

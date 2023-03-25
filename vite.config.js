@@ -10,7 +10,9 @@ export default defineConfig({
       '@jsquash/webp',
       '@jsquash/avif',
       // '@saschazar/wasm-heif'
-
     ]
   },
+  define: {
+    BUILD_TIMESTAMP: JSON.stringify(new Date().toISOString())
+  }
 });
