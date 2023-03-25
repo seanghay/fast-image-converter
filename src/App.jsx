@@ -203,7 +203,7 @@ export default function App({ worker }) {
 
 					<button onClick={chooseFile}>Browse files</button>
 					<input
-						accept="image/png,image/jpeg,image/jpg,image/webp,image/avif,image/heif,image/heif-sequence,image/heic,image/heic-sequence,application/pdf"
+						accept="image/svg+xml,image/png,image/jpeg,image/jpg,image/webp,image/avif,image/heif,image/heif-sequence,image/heic,image/heic-sequence,application/pdf"
 						multiple
 						onChange={onFileChange}
 						type="file"
