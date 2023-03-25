@@ -13,7 +13,11 @@ import wasm_heif from "@saschazar/wasm-heif";
 import wasm_heif_url from "@saschazar/wasm-heif/wasm_heif.wasm?url";
 
 import { initEmscriptenModule } from '@jsquash/avif/utils.js'
+import { fileToArrayBuffer } from './buffer.js'
+import resvgWasmUrl from '@resvg/resvg-wasm/index_bg.wasm?url';
+import { initWasm as initResvg, Resvg } from '@resvg/resvg-wasm';
 
+let isResvgReady = false;
 let emscriptenModuleAVIF;
 let emscriptenModuleAVIF_ENC;
 let emscriptenModuleWEBP;
@@ -90,11 +94,31 @@ async function decode_avif(buffer) {
   const module = await emscriptenModuleAVIF;
   const result = module.decode(buffer);
 
-  if (!result)
+  if (!result) {
     throw new Error('Decoding error');
+  }
+
   return result;
 }
 
+async function decode_svg(data, { target }) {
+  const isJpeg = target === 'jpeg';
+
+  if (!isResvgReady) {
+    await initResvg(fetch(resvgWasmUrl))
+    isResvgReady = true;
+  }
+  const opts = {};
+
+  if (isJpeg) {
+    opts['background'] = 'white';
+  }
+
+  const resvg = new Resvg(new Uint8Array(data), opts);
+  const { pixels, width, height } = resvg.render();
+  const imageData = new ImageData(new Uint8ClampedArray(pixels), width, height);
+  return imageData;
+}
 
 addEventListener("message", async ({ data }) => {
 
@@ -111,7 +135,8 @@ addEventListener("message", async ({ data }) => {
     jpeg: decode_jpeg,
     avif: decode_avif,
     heif: decode_heif,
-    heic: decode_heif
+    heic: decode_heif,
+    'svg+xml': decode_svg,
   }
 
   const extensions = {
@@ -133,12 +158,12 @@ addEventListener("message", async ({ data }) => {
     if (!enc || !dec) continue;
 
     const arrayBuffer = await fileToArrayBuffer(file);
-    const rawBuffer = await dec(arrayBuffer);
+    const rawBuffer = await dec(arrayBuffer, { target });
     const imageData = await enc(rawBuffer);
     const arr = new Uint8Array(imageData);
     const blob = new Blob([arr], { type: "image/" + target });
     const ext = extensions[target];
-    let filename = file.name.replace(/\.(jpe?g|png|webp|heic|heif)$/i, '');
+    let filename = file.name.replace(/\.(jpe?g|png|webp|heic|heif|svg)$/i, '');
     filename += ext;
 
     postMessage({
@@ -149,12 +174,3 @@ addEventListener("message", async ({ data }) => {
   }
 })
 
-
-async function fileToArrayBuffer(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = () => reject();
-    reader.readAsArrayBuffer(file);
-  })
-}

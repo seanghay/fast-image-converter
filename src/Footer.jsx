@@ -5,7 +5,7 @@ export default function Footer() {
 		<>
 			<footer className="footer">
 				<p className="text-center color-secondary">
-					Supported formats (.avif, .webp, .jpg, .png)
+					Supported formats (.svg, .heif, .heic, .avif, .webp, .jpg, .png)
 				</p>
 
 				<p className="text-center text-sm color-secondary">

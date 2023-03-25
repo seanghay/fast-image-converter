@@ -9,10 +9,11 @@ export default defineConfig({
       '@jsquash/jpeg',
       '@jsquash/webp',
       '@jsquash/avif',
+      '@resvg/resvg-wasm'
       // '@saschazar/wasm-heif'
     ]
   },
   define: {
-    BUILD_TIMESTAMP: JSON.stringify(new Date().toISOString())
+    BUILD_TIMESTAMP: JSON.stringify(new Date().toISOString()),
   }
 });
