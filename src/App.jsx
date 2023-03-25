@@ -4,6 +4,17 @@ import prettyBytes from "pretty-bytes";
 import { nanoid } from "nanoid";
 import { saveAs } from "file-saver";
 import Footer from "./Footer.jsx";
+import { BlobReader, BlobWriter, ZipWriter } from "@zip.js/zip.js";
+
+async function createZipBlob(entries = []) {
+	const zip = new ZipWriter(new BlobWriter("application/zip"));
+
+	await Promise.all(
+		entries.map(({ filename, blob }) => zip.add(filename, new BlobReader(blob)))
+	);
+
+	return zip.close();
+}
 
 function AppIcon() {
 	return (
@@ -105,8 +116,10 @@ export default function App({ worker }) {
 	const [format, setFormat] = useState(formats[0]);
 	const [files, setFiles] = useState([]);
 	const fileRef = useRef(null);
+	const [zipping, setZipping] = useState(false);
 
 	const isSomeReady = files.some((e) => e.ready);
+	const isAllReady = files.every(e => e.ready);	
 	const totalReadyCount = files.filter((it) => it.ready).length;
 
 	useEffect(() => {
@@ -169,6 +182,14 @@ export default function App({ worker }) {
 		}
 	};
 
+	const saveAsZIP = async () => {
+		setZipping(true);
+		const readyFiles = files.filter((file) => file.ready && file.blob);
+		const blob = await createZipBlob(readyFiles);
+		saveAs(blob, "photos-" + Date.now() + ".zip");
+		setZipping(false);
+	};
+
 	return (
 		<div className="container">
 			<div className="card">
@@ -217,12 +238,21 @@ export default function App({ worker }) {
 								Clear
 							</button>
 							<button
+								disabled={zipping || !files.length || !isAllReady}
+								className="light"
+								onClick={saveAsZIP}
+							>
+								Download zip
+							</button>
+							
+							<button
 								disabled={!files.length || !isSomeReady}
 								className="secondary"
 								onClick={saveAllFiles}
 							>
-								Download all
+								Download {totalReadyCount} photo(s)
 							</button>
+							
 						</div>
 					</div>
 				) : null}
