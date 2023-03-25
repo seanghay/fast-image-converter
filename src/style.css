@@ -281,3 +281,16 @@ button {
 		transform: rotate(360deg);
 	}
 }
+
+.page-index {
+	font-size: 12px;
+	color: white;
+	background-color: mediumseagreen;
+	padding: 0px 4px;
+	font-weight: 600;
+	display: inline-block;
+	margin: 0 6px;
+	border-radius: 3px;
+	min-width: 8px;
+	text-align: center;
+}

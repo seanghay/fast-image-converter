@@ -1,0 +1,22 @@
+diff --git a/node_modules/pdfjs-dist/build/pdf.js b/node_modules/pdfjs-dist/build/pdf.js
+index 212325e..8d98fa1 100644
+--- a/node_modules/pdfjs-dist/build/pdf.js
++++ b/node_modules/pdfjs-dist/build/pdf.js
+@@ -965,7 +965,7 @@ function getDocument(src) {
+   const pdfBug = src.pdfBug === true;
+   const length = rangeTransport ? rangeTransport.length : src.length ?? NaN;
+   const useSystemFonts = typeof src.useSystemFonts === "boolean" ? src.useSystemFonts : !_is_node.isNodeJS && !disableFontFace;
+-  const useWorkerFetch = typeof src.useWorkerFetch === "boolean" ? src.useWorkerFetch : CMapReaderFactory === _display_utils.DOMCMapReaderFactory && StandardFontDataFactory === _display_utils.DOMStandardFontDataFactory && (0, _display_utils.isValidFetchUrl)(cMapUrl, document.baseURI) && (0, _display_utils.isValidFetchUrl)(standardFontDataUrl, document.baseURI);
++  const useWorkerFetch = typeof src.useWorkerFetch === "boolean" ? src.useWorkerFetch : CMapReaderFactory === _display_utils.DOMCMapReaderFactory && StandardFontDataFactory === _display_utils.DOMStandardFontDataFactory && (0, _display_utils.isValidFetchUrl)(cMapUrl, self.location.href) && (0, _display_utils.isValidFetchUrl)(standardFontDataUrl, self.location.href);
+   const styleElement = null;
+   (0, _util.setVerbosityLevel)(verbosity);
+   const transportFactory = useWorkerFetch ? null : {
+@@ -3926,7 +3926,7 @@ class DOMCanvasFactory extends _base_factory.BaseCanvasFactory {
+ }
+ exports.DOMCanvasFactory = DOMCanvasFactory;
+ async function fetchData(url, asTypedArray = false) {
+-  if (isValidFetchUrl(url, document.baseURI)) {
++  if (isValidFetchUrl(url, self.location.href)) {
+     const response = await fetch(url);
+     if (!response.ok) {
+       throw new Error(response.statusText);

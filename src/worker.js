@@ -16,7 +16,11 @@ import { initEmscriptenModule } from '@jsquash/avif/utils.js'
 import { fileToArrayBuffer } from './buffer.js'
 import resvgWasmUrl from '@resvg/resvg-wasm/index_bg.wasm?url';
 import { initWasm as initResvg, Resvg } from '@resvg/resvg-wasm';
+import * as pdfjs from 'pdfjs-dist/build/pdf.js'
+import PDFWorker from 'pdfjs-dist/build/pdf.worker.js?worker'
+import { nanoid } from 'nanoid';
 
+let pdfReady = false;
 let isResvgReady = false;
 let emscriptenModuleAVIF;
 let emscriptenModuleAVIF_ENC;
@@ -120,6 +124,44 @@ async function decode_svg(data, { target }) {
   return imageData;
 }
 
+async function decode_pdf(data) {
+
+  if (!pdfReady) {
+    const worker = new PDFWorker();
+    pdfjs.GlobalWorkerOptions.workerPort = worker;
+    pdfReady = true;  
+  }
+  
+  const document = {
+    fonts: self.fonts,
+    createElement: (name) => {
+      if (name == 'canvas') {
+        return new OffscreenCanvas(1, 1);
+      }
+      return null;
+    },
+  };
+
+  const doc = await pdfjs.getDocument({
+    data, ownerDocument: document
+  }).promise;
+
+  const imageDataCollection = [];
+  for (let i = 1; i <= doc.numPages; i++) {
+    const page = await doc.getPage(i);
+    const pageViewport = page.getViewport({ scale: 2 });
+    const canvas = new OffscreenCanvas(pageViewport.width, pageViewport.height);
+    const ctx = canvas.getContext('2d');
+    await page.render({
+      canvasContext: ctx,
+      viewport: pageViewport,
+    }).promise
+
+    imageDataCollection.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+  }
+  return imageDataCollection;
+}
+
 addEventListener("message", async ({ data }) => {
 
   const encoders = {
@@ -137,6 +179,7 @@ addEventListener("message", async ({ data }) => {
     heif: decode_heif,
     heic: decode_heif,
     'svg+xml': decode_svg,
+    pdf: decode_pdf,
   }
 
   const extensions = {
@@ -146,9 +189,26 @@ addEventListener("message", async ({ data }) => {
     avif: ".avif",
     heif: ".heif",
     heic: ".heic",
+    pdf: ".pdf",
   }
 
-  for (const { id, file, format } of data) {
+  const emit = async ({ 
+    id,
+    enc, rawBuffer, filename, target
+   }) => {
+    const imageData = await enc(rawBuffer);
+    const arr = new Uint8Array(imageData);
+    const blob = new Blob([arr], { type: "image/" + target });
+
+    postMessage({
+      id,
+      blob,
+      filename,
+    });
+  }
+
+  for (const _file of data) {
+    const { id, file, format } = _file;
     const target = format.toLowerCase();
 
     const src = file.type.split('/')[1];
@@ -159,18 +219,58 @@ addEventListener("message", async ({ data }) => {
 
     const arrayBuffer = await fileToArrayBuffer(file);
     const rawBuffer = await dec(arrayBuffer, { target });
-    const imageData = await enc(rawBuffer);
-    const arr = new Uint8Array(imageData);
-    const blob = new Blob([arr], { type: "image/" + target });
+
+    if (Array.isArray(rawBuffer)) {
+      const items = rawBuffer.map((raw, i) => {
+        return {
+          ..._file,
+          id: nanoid(11),
+          bufferedIndex: i,
+        }
+      })
+
+      postMessage({
+        id,
+        items,
+        emitMultiple: true,
+        length: rawBuffer.length,
+      })
+
+      for (const item of items) {
+        const rf = rawBuffer[item.bufferedIndex];
+        const ext = extensions[target];
+        let filename = file.name.replace(/\.(jpe?g|pdf|png|webp|heic|heif|svg)$/i, '');
+        filename += `-${item.bufferedIndex + 1}` + ext;
+
+        await emit({ id: item.id, enc, rawBuffer: rf, filename, target });
+      }
+
+      continue;
+    }
+
     const ext = extensions[target];
-    let filename = file.name.replace(/\.(jpe?g|png|webp|heic|heif|svg)$/i, '');
+    let filename = file.name.replace(/\.(jpe?g|pdf|png|webp|heic|heif|svg)$/i, '');
     filename += ext;
 
-    postMessage({
+    await emit({
       id,
-      blob,
+      enc, 
+      rawBuffer,
+      file,
+      target,
       filename,
     })
+
+    // const imageData = await enc(rawBuffer);
+    // const arr = new Uint8Array(imageData);
+    // const blob = new Blob([arr], { type: "image/" + target });
+    
+
+    // postMessage({
+    //   id,
+    //   blob,
+    //   filename,
+    // })
   }
 })
 

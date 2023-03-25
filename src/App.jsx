@@ -73,40 +73,56 @@ function RadioGroup({ items, onChange, value }) {
 export function FileListView({ files }) {
 	return (
 		<div className="files">
-			{files.map(({ file, id, ready, failed, blob, filename, format }) => (
-				<div key={id} className="file">
-					<div className="file-info">
-						<div className="file-name truncate">{file.name}</div>
-						<div className="file-size">
-							{prettyBytes(file.size)}
-							{"\u30fb"}
-							{file.type.split("/")[1]}
-							{" → "}
-							{format.toLowerCase()}
-							{blob ? (
-								<span>
-									{"\u30fb"}
-									<span className="color-primary">
-										{prettyBytes(blob.size)}
+			{files.map(
+				({
+					file,
+					id,
+					ready,
+					failed,
+					blob,
+					filename,
+					format,
+					bufferedIndex,
+				}) => (
+					<div key={id} className="file">
+						<div className="file-info">
+							<div className="file-name truncate">
+								{bufferedIndex != null ? (
+									<span className="page-index">{bufferedIndex + 1}</span>
+								) : null}
+								{file.name}
+							</div>
+							<div className="file-size">
+								{prettyBytes(file.size)}
+								{"\u30fb"}
+								{file.type.split("/")[1]}
+								{" → "}
+								{format.toLowerCase()}
+								{blob ? (
+									<span>
+										{"\u30fb"}
+										<span className="color-primary">
+											{prettyBytes(blob.size)}
+										</span>
 									</span>
-								</span>
-							) : (
-								""
-							)}
+								) : (
+									""
+								)}
+							</div>
 						</div>
+						{!ready && !failed ? <span className="loader"></span> : null}
+						{ready || failed ? (
+							<button
+								onClick={() => saveAs(blob, filename)}
+								className="small secondary"
+								disabled={!ready}
+							>
+								{ready ? "Download" : failed ? "Failed 🙁" : "Processing…"}
+							</button>
+						) : null}
 					</div>
-					{!ready && !failed ? <span className="loader"></span> : null}
-					{ready || failed ? (
-						<button
-							onClick={() => saveAs(blob, filename)}
-							className="small secondary"
-							disabled={!ready}
-						>
-							{ready ? "Download" : failed ? "Failed 🙁" : "Processing…"}
-						</button>
-					) : null}
-				</div>
-			))}
+				)
+			)}
 		</div>
 	);
 }
@@ -119,11 +135,16 @@ export default function App({ worker }) {
 	const [zipping, setZipping] = useState(false);
 
 	const isSomeReady = files.some((e) => e.ready);
-	const isAllReady = files.every(e => e.ready);	
+	const isAllReady = files.every((e) => e.ready);
 	const totalReadyCount = files.filter((it) => it.ready).length;
 
 	useEffect(() => {
 		worker.onmessage = ({ data }) => {
+			if (data.emitMultiple) {
+				setFiles([...files.filter((f) => f.id !== data.id), ...data.items]);
+				return;
+			}
+
 			setFiles(
 				files.map((file) => {
 					if (file.id === data.id) {
@@ -153,10 +174,8 @@ export default function App({ worker }) {
 		});
 
 		// append files
-
 		let _files = [...transformedFiles, ...files];
 		setFiles(_files);
-
 		worker.postMessage(_files);
 	};
 
@@ -244,7 +263,7 @@ export default function App({ worker }) {
 							>
 								Download zip
 							</button>
-							
+
 							<button
 								disabled={!files.length || !isSomeReady}
 								className="secondary"
@@ -252,7 +271,6 @@ export default function App({ worker }) {
 							>
 								Download {totalReadyCount} photo(s)
 							</button>
-							
 						</div>
 					</div>
 				) : null}
