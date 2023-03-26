@@ -6,7 +6,7 @@ export default function Footer() {
 			<footer className="footer">
 				<p className="text-center color-secondary">
 					Supported formats <br />
-					(.svg, .heif, .heic, .avif, .webp, .jpg, .png, .pdf)
+					.svg, .heif, .heic, .avif, .webp, .jpg, .png, .pdf VectorDrawable(.xml)
 				</p>
 
 				<p className="text-center text-sm color-secondary">

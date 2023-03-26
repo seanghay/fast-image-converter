@@ -1,3 +1,38 @@
+const SUPPORTED_MIME_TYPES = new Set([
+  'image/svg+xml',
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'image/avif',
+  'application/pdf',
+  'image/heif',
+  'image/heic',
+  'image/heif-sequence',
+  'image/heic-sequence',
+  'application/xml',
+  'text/xml',
+]);
+
+
+const supportsFileSystemAccessAPI =
+  "getAsFileSystemHandle" in DataTransferItem.prototype;
+const supportsWebkitGetAsEntry =
+  "webkitGetAsEntry" in DataTransferItem.prototype;
+
+async function* getFilesRecursively(entry) {
+  if (entry.kind === "file") {
+    const file = await entry.getFile();
+    if (file !== null) {
+      file.relativePath = getRelativePath(entry);
+      yield file;
+    }
+  } else if (entry.kind === "directory") {
+    for await (const handle of entry.values()) {
+      yield* getFilesRecursively(handle);
+    }
+  }
+}
+
 export function createFileDropHandler(el, onDrop) {
 
   el.ondrag = e => {
@@ -5,7 +40,7 @@ export function createFileDropHandler(el, onDrop) {
     e.stopPropagation();
   };
 
-  el.ondrop = ev => {
+  el.ondrop = async ev => {
     ev.preventDefault();
     ev.stopPropagation();
     document.body.classList.remove('drag-over');
@@ -13,16 +48,30 @@ export function createFileDropHandler(el, onDrop) {
     const files = [];
 
     if (ev.dataTransfer.items) {
-      // Use DataTransferItemList interface to access the file(s)
-      [...ev.dataTransfer.items].forEach((item, i) => {
-        // If dropped items aren't files, reject them
-        if (item.kind === "file") {
-          const file = item.getAsFile();
-          files.push(file);
+      const promises = [...ev.dataTransfer.items].filter(item => item.kind === 'file')
+        .map(item => supportsFileSystemAccessAPI ?
+          item.getAsFileSystemHandle() :
+          supportsWebkitGetAsEntry ? item.webkitGetAsEntry() :
+            item.getAsFile())
+
+      const traverse = async (handle) => {
+        if (handle.kind === 'directory' || handle.isDirectory) {
+          for await (const entry of handle.values()) {
+            await traverse(entry);
+          }
+        } else {
+          const file = await handle.getFile();
+          if (SUPPORTED_MIME_TYPES.has(file.type)) {
+            files.push(file);
+          }
         }
-      });
+      };
+
+      for await (const handle of promises) {
+        await traverse(handle);
+      }
+
     } else {
-      // Use DataTransfer interface to access the file(s)
       files.push(...ev.dataTransfer.files)
     }
 

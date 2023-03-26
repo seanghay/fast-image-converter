@@ -19,6 +19,7 @@ import { initWasm as initResvg, Resvg } from '@resvg/resvg-wasm';
 import * as pdfjs from 'pdfjs-dist/build/pdf.js'
 import PDFWorker from 'pdfjs-dist/build/pdf.worker.js?worker'
 import { nanoid } from 'nanoid';
+import { transform } from 'vector-drawable-svg';
 
 let pdfReady = false;
 let isResvgReady = false;
@@ -118,10 +119,19 @@ async function decode_svg(data, { target }) {
     opts['background'] = 'white';
   }
 
-  const resvg = new Resvg(new Uint8Array(data), opts);
+  const resvg = new Resvg((data instanceof Uint8Array) ? data : new Uint8Array(data), opts);
   const { pixels, width, height } = resvg.render();
   const imageData = new ImageData(new Uint8ClampedArray(pixels), width, height);
   return imageData;
+}
+
+async function decode_xml(data, opts) {
+  const textDecoder = new TextDecoder();
+  const textEncoder = new TextEncoder();
+  const xmlString = textDecoder.decode(data);
+  const svgString = transform(xmlString);
+  const svgArrayBuffer = textEncoder.encode(svgString);
+  return decode_svg(svgArrayBuffer, opts);
 }
 
 async function decode_pdf(data) {
@@ -129,9 +139,9 @@ async function decode_pdf(data) {
   if (!pdfReady) {
     const worker = new PDFWorker();
     pdfjs.GlobalWorkerOptions.workerPort = worker;
-    pdfReady = true;  
+    pdfReady = true;
   }
-  
+
   const document = {
     fonts: self.fonts,
     createElement: (name) => {
@@ -179,6 +189,7 @@ addEventListener("message", async ({ data }) => {
     heif: decode_heif,
     heic: decode_heif,
     'svg+xml': decode_svg,
+    'xml': decode_xml,
     pdf: decode_pdf,
   }
 
@@ -192,10 +203,10 @@ addEventListener("message", async ({ data }) => {
     pdf: ".pdf",
   }
 
-  const emit = async ({ 
+  const emit = async ({
     id,
     enc, rawBuffer, filename, target
-   }) => {
+  }) => {
     const imageData = await enc(rawBuffer);
     const arr = new Uint8Array(imageData);
     const blob = new Blob([arr], { type: "image/" + target });
@@ -239,9 +250,8 @@ addEventListener("message", async ({ data }) => {
       for (const item of items) {
         const rf = rawBuffer[item.bufferedIndex];
         const ext = extensions[target];
-        let filename = file.name.replace(/\.(jpe?g|pdf|png|webp|heic|heif|svg)$/i, '');
+        let filename = file.name.replace(/\.(xml|jpe?g|pdf|png|webp|heic|heif|svg)$/i, '');
         filename += `-${item.bufferedIndex + 1}` + ext;
-
         await emit({ id: item.id, enc, rawBuffer: rf, filename, target });
       }
 
@@ -249,12 +259,12 @@ addEventListener("message", async ({ data }) => {
     }
 
     const ext = extensions[target];
-    let filename = file.name.replace(/\.(jpe?g|pdf|png|webp|heic|heif|svg)$/i, '');
+    let filename = file.name.replace(/\.(xml|jpe?g|pdf|png|webp|heic|heif|svg)$/i, '');
     filename += ext;
 
     await emit({
       id,
-      enc, 
+      enc,
       rawBuffer,
       file,
       target,
@@ -264,7 +274,7 @@ addEventListener("message", async ({ data }) => {
     // const imageData = await enc(rawBuffer);
     // const arr = new Uint8Array(imageData);
     // const blob = new Blob([arr], { type: "image/" + target });
-    
+
 
     // postMessage({
     //   id,
