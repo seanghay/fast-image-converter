@@ -141,7 +141,7 @@ export default function App({ worker }) {
 	useEffect(() => {
 		worker.onmessage = ({ data }) => {
 			if (data.emitMultiple) {
-				setFiles([...files.filter((f) => f.id !== data.id), ...data.items]);
+				setFiles([...data.items, ...files.filter((f) => f.id !== data.id)]);
 				return;
 			}
 
