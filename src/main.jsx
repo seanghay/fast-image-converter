@@ -7,9 +7,20 @@ import MyWorker from "./worker.js?worker";
 import resvg_wasm_url from "@resvg/resvg-wasm/index_bg.wasm?url";
 
 const worker = new MyWorker();
+const formats = ["JPEG", "PNG", "WEBP", "AVIF"];
+
+let initialFormat = new URL(location.href).searchParams.get("format");
+
+if (typeof initialFormat === "string") {
+	initialFormat = initialFormat.toUpperCase();
+}
+
+if (!initialFormat || !formats.includes(initialFormat)) {
+	initialFormat = formats[0];
+}
 
 ReactDOM.createRoot(document.getElementById("app")).render(
 	<React.StrictMode>
-		<App worker={worker} />
+		<App formats={formats} initialFormat={initialFormat} worker={worker} />
 	</React.StrictMode>
 );

@@ -127,9 +127,8 @@ export function FileListView({ files }) {
 	);
 }
 
-export default function App({ worker }) {
-	const formats = ["JPEG", "PNG", "WEBP", "AVIF"];
-	const [format, setFormat] = useState(formats[0]);
+export default function App({ formats, initialFormat, worker }) {
+	const [format, setFormat] = useState(initialFormat);
 	const [files, setFiles] = useState([]);
 	const fileRef = useRef(null);
 	const [zipping, setZipping] = useState(false);
@@ -209,6 +208,14 @@ export default function App({ worker }) {
 		setZipping(false);
 	};
 
+	const onFormatChange = (item) => {
+		setFormat(item);
+		// update state
+		const url = new URL(location);
+		url.searchParams.set('format', item.toLowerCase());
+		history.pushState({}, '', url);
+	};
+
 	return (
 		<div className="container">
 			<div className="card">
@@ -239,7 +246,7 @@ export default function App({ worker }) {
 						<RadioGroup
 							value={format}
 							items={formats}
-							onChange={(item) => setFormat(item)}
+							onChange={onFormatChange}
 						/>
 					</div>
 				</div>
