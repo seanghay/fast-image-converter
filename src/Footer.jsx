@@ -1,11 +1,12 @@
-const timestamp = new Date(BUILD_TIMESTAMP).toUTCString()
+const timestamp = new Date(BUILD_TIMESTAMP).toUTCString();
 
 export default function Footer() {
 	return (
 		<>
 			<footer className="footer">
 				<p className="text-center color-secondary">
-					Supported formats (.svg, .heif, .heic, .avif, .webp, .jpg, .png, .pdf)
+					Supported formats <br />
+					(.svg, .heif, .heic, .avif, .webp, .jpg, .png, .pdf)
 				</p>
 
 				<p className="text-center text-sm color-secondary">
@@ -14,9 +15,7 @@ export default function Footer() {
 						@seanghay
 					</a>
 				</p>
-				<p className="text-center text-sm color-secondary">
-					{timestamp}
-				</p>
+				<p className="text-center text-sm color-secondary">{timestamp}</p>
 			</footer>
 		</>
 	);
