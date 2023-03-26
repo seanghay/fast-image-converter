@@ -185,6 +185,7 @@ addEventListener("message", async ({ data }) => {
     png: decode_png,
     webp: decode_webp,
     jpeg: decode_jpeg,
+    jpg: decode_jpeg,
     avif: decode_avif,
     heif: decode_heif,
     heic: decode_heif,
@@ -222,11 +223,22 @@ addEventListener("message", async ({ data }) => {
     const { id, file, format } = _file;
     const target = format.toLowerCase();
 
-    const src = file.type.split('/')[1];
+    let src = file.type.split('/')[1];
+
+    if (!src) {
+      src = file.name.split('.').pop();
+      if (typeof src === 'string') {
+        src = src.toLowerCase();
+      }
+    }
+
     const enc = encoders[target];
     const dec = decoders[src];
 
-    if (!enc || !dec) continue;
+    if (!enc || !dec) {
+      // failed
+      continue;
+    }
 
     const arrayBuffer = await fileToArrayBuffer(file);
     const rawBuffer = await dec(arrayBuffer, { target });
