@@ -35,20 +35,11 @@ async function* getFilesRecursively(entry) {
 
 export function createFileDropHandler(el, onDrop) {
 
-  el.ondrag = e => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
-  el.ondrop = async ev => {
-    ev.preventDefault();
-    ev.stopPropagation();
-    document.body.classList.remove('drag-over');
-
+  const handleDataTransfer = async (dataTransfer) => {
     const files = [];
 
-    if (ev.dataTransfer.items) {
-      const promises = [...ev.dataTransfer.items].filter(item => item.kind === 'file')
+    if (dataTransfer.items) {
+      const promises = [...dataTransfer.items].filter(item => item.kind === 'file')
         .map(item => supportsFileSystemAccessAPI ?
           item.getAsFileSystemHandle() :
           supportsWebkitGetAsEntry ? item.webkitGetAsEntry() :
@@ -73,10 +64,29 @@ export function createFileDropHandler(el, onDrop) {
       }
 
     } else {
-      files.push(...ev.dataTransfer.files)
+      files.push(...dataTransfer.files)
     }
 
     onDrop(files);
+  }
+
+
+  document.onpaste = e => {
+    e.preventDefault();
+    const dataTransfer = (e.clipboardData || window.clipboardData);
+    handleDataTransfer(dataTransfer)
+  }
+
+  el.ondrag = e => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  el.ondrop = async ev => {
+    ev.preventDefault();
+    ev.stopPropagation();
+    document.body.classList.remove('drag-over');
+    await handleDataTransfer(ev.dataTransfer);
   }
 
   el.ondragstart = e => {
