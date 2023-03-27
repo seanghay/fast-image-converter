@@ -38,6 +38,7 @@ export function createFileDropHandler(el, onDrop) {
   const handleDataTransfer = async (dataTransfer) => {
     const files = [];
 
+
     if (dataTransfer.items) {
       const promises = [...dataTransfer.items].filter(item => item.kind === 'file')
         .map(item => supportsFileSystemAccessAPI ?
@@ -46,6 +47,11 @@ export function createFileDropHandler(el, onDrop) {
             item.getAsFile())
 
       const traverse = async (handle) => {
+        if (!handle) {
+          console.warn('invalid clipboardData')
+          return
+        }
+
         if (handle.kind === 'directory' || handle.isDirectory) {
           for await (const entry of handle.values()) {
             await traverse(entry);
@@ -63,18 +69,25 @@ export function createFileDropHandler(el, onDrop) {
         await traverse(handle);
       }
 
-    } else {
-      files.push(...dataTransfer.files)
     }
-
+    
+    for (const file of [...dataTransfer.files]) {
+      if (SUPPORTED_MIME_TYPES.has(file.type) || /\.(heif|heic)$/i.test(file.name)) {
+        console.log(file)
+        files.push(file);
+      }
+    }
+    
     onDrop(files);
   }
 
 
-  document.onpaste = e => {
+  document.onpaste = async e => {
     e.preventDefault();
     const dataTransfer = (e.clipboardData || window.clipboardData);
-    handleDataTransfer(dataTransfer)
+    //console.log(dataTransfer.files)
+    await handleDataTransfer(dataTransfer);
+    
   }
 
   el.ondrag = e => {
