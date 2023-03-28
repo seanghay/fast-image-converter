@@ -1,3 +1,5 @@
+import isSvg from 'is-svg';
+
 const SUPPORTED_MIME_TYPES = new Set([
   'image/svg+xml',
   'image/jpeg',
@@ -13,30 +15,31 @@ const SUPPORTED_MIME_TYPES = new Set([
   'text/xml',
 ]);
 
-
 const supportsFileSystemAccessAPI =
   "getAsFileSystemHandle" in DataTransferItem.prototype;
 const supportsWebkitGetAsEntry =
   "webkitGetAsEntry" in DataTransferItem.prototype;
 
-async function* getFilesRecursively(entry) {
-  if (entry.kind === "file") {
-    const file = await entry.getFile();
-    if (file !== null) {
-      file.relativePath = getRelativePath(entry);
-      yield file;
-    }
-  } else if (entry.kind === "directory") {
-    for await (const handle of entry.values()) {
-      yield* getFilesRecursively(handle);
-    }
-  }
+function createSvgFile(svg) {
+  const blob = new Blob([svg], { type: "image/svg+xml" });
+  return new File([blob], "image.svg", {
+    type: "image/svg+xml",
+    lastModified: new Date().getTime()
+  });
 }
 
 export function createFileDropHandler(el, onDrop) {
 
   const handleDataTransfer = async (dataTransfer) => {
     const files = [];
+
+    for (const type of dataTransfer.types) {
+      if (type !== 'text/plain') continue;
+      const text = dataTransfer.getData(type);
+      if (!isSvg(text)) continue;
+      const file = createSvgFile(text);
+      files.push(file);
+    }
 
     if (dataTransfer.items) {
       const promises = [...dataTransfer.items].filter(item => item.kind === 'file')
@@ -46,6 +49,7 @@ export function createFileDropHandler(el, onDrop) {
             item.getAsFile())
 
       const traverse = async (handle) => {
+
         if (!handle) {
           console.warn('invalid clipboardData')
           return
@@ -68,13 +72,13 @@ export function createFileDropHandler(el, onDrop) {
         await traverse(handle);
       }
     }
-    
+
     for (const file of [...dataTransfer.files]) {
       if (SUPPORTED_MIME_TYPES.has(file.type) || /\.(heif|heic)$/i.test(file.name)) {
         files.push(file);
       }
     }
-    
+
     onDrop(files);
   }
 

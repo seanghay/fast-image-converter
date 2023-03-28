@@ -1,9 +1,9 @@
-import { createFileDropHandler } from "./drag.js";
 import React, { useEffect, useId, useRef, useState } from "react";
 import prettyBytes from "pretty-bytes";
+import Footer from "./Footer.jsx";
+import { createFileDropHandler } from "./drag.js";
 import { nanoid } from "nanoid";
 import { saveAs } from "file-saver";
-import Footer from "./Footer.jsx";
 import { BlobReader, BlobWriter, ZipWriter } from "@zip.js/zip.js";
 
 async function createZipBlob(entries = []) {
@@ -22,7 +22,6 @@ async function createZipBlob(entries = []) {
 				const name = filename.substring(0, filename.lastIndexOf("."));
 				uniqueFilename = name + `(${counter++})` + ext;
 			}
-
 			filenamesSet.add(uniqueFilename);
 			return zip.add(uniqueFilename, new BlobReader(blob));
 		})

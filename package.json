@@ -28,6 +28,7 @@
     "@yireen/squoosh-browser": "^1.0.7",
     "@zip.js/zip.js": "^2.6.81",
     "file-saver": "^2.0.5",
+    "is-svg": "^5.0.0",
     "libheif-js": "^1.15.1",
     "lodash.debounce": "^4.0.8",
     "nanoid": "^4.0.1",
