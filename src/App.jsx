@@ -141,6 +141,8 @@ export function FileListView({ files }) {
 	);
 }
 
+const notificationStack = [];
+
 export default function App({ formats, initialFormat, worker }) {
 	const [format, setFormat] = useState(initialFormat);
 	const [files, setFiles] = useState([]);
@@ -150,6 +152,45 @@ export default function App({ formats, initialFormat, worker }) {
 	const isSomeReady = files.some((e) => e.ready);
 	const isAllReady = files.every((e) => e.ready);
 	const totalReadyCount = files.filter((it) => it.ready).length;
+	const [visibiltyState, setVisibiltyState] = useState(
+		document.visibilityState
+	);
+
+	useEffect(() => {
+		const handler = () => {
+			setVisibiltyState(document.visibilityState);
+			if (document.visibilityState === "visible") {
+				for (const notification of notificationStack) {
+					notification.close();
+				}
+			}
+		};
+		document.addEventListener("visibilitychange", handler);
+		return () => document.removeEventListener("visibilitychange", handler);
+	}, []);
+
+	useEffect(() => {
+		if (!isAllReady || totalReadyCount === 0) {
+			return;
+		}
+
+		// if the tab is invisible, notify
+		if (visibiltyState === "hidden") {
+			if ("Notification" in window && Notification.permission === "granted") {
+				const notification = new Notification("Ready to download", {
+					body: `${totalReadyCount} photos`,
+					icon: new URL("/apple-touch-icon.png", location.href).href,
+					silent: true,
+				});
+				notification.onclick = () => {
+					window.focus();
+					notification.close();
+				};
+
+				notificationStack.push(notification);
+			}
+		}
+	}, [isAllReady]);
 
 	useEffect(() => {
 		worker.onmessage = ({ data }) => {

@@ -1,6 +1,24 @@
+import { useEffect, useState } from "react";
+
 const timestamp = new Date(BUILD_TIMESTAMP).toUTCString();
 
 export default function Footer() {
+	const [notifiable, setNotifiable] = useState("granted");
+
+	useEffect(() => {
+		if ("Notification" in window) {
+			setNotifiable(Notification.permission);
+		}
+	}, []);
+
+	const requestPermission = () => {
+		if ("Notification" in window) {
+			Notification.requestPermission().then((result) => {
+				setNotifiable(result);
+			});
+		}
+	};
+
 	return (
 		<>
 			<footer className="footer">
@@ -17,6 +35,21 @@ export default function Footer() {
 					</a>
 				</p>
 				<p className="text-center text-sm color-secondary">{timestamp}</p>
+				{notifiable !== "granted" ? (
+					<div className="text-center">
+						<button
+							disabled={notifiable === "denied"}
+							onClick={requestPermission}
+							className="light small"
+						>
+							{notifiable === "default"
+								? "Notify me once it's ready"
+								: notifiable === "denied"
+								? "Notification disabled"
+								: ""}
+						</button>
+					</div>
+				) : null}
 			</footer>
 		</>
 	);
