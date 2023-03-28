@@ -8,9 +8,24 @@ import { BlobReader, BlobWriter, ZipWriter } from "@zip.js/zip.js";
 
 async function createZipBlob(entries = []) {
 	const zip = new ZipWriter(new BlobWriter("application/zip"));
+	const filenamesSet = new Set();
 
 	await Promise.all(
-		entries.map(({ filename, blob }) => zip.add(filename, new BlobReader(blob)))
+		entries.map(({ filename, blob }) => {
+			let counter = 1;
+			let uniqueFilename = filename;
+			while (filenamesSet.has(uniqueFilename)) {
+				const ext =
+					filename.lastIndexOf(".") !== -1
+						? filename.substring(filename.lastIndexOf("."))
+						: "";
+				const name = filename.substring(0, filename.lastIndexOf("."));
+				uniqueFilename = name + `(${counter++})` + ext;
+			}
+
+			filenamesSet.add(uniqueFilename);
+			return zip.add(uniqueFilename, new BlobReader(blob));
+		})
 	);
 
 	return zip.close();
@@ -212,8 +227,8 @@ export default function App({ formats, initialFormat, worker }) {
 		setFormat(item);
 		// update state
 		const url = new URL(location);
-		url.searchParams.set('format', item.toLowerCase());
-		history.pushState({}, '', url);
+		url.searchParams.set("format", item.toLowerCase());
+		history.pushState({}, "", url);
 	};
 
 	return (

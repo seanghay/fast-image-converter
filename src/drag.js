@@ -38,7 +38,6 @@ export function createFileDropHandler(el, onDrop) {
   const handleDataTransfer = async (dataTransfer) => {
     const files = [];
 
-
     if (dataTransfer.items) {
       const promises = [...dataTransfer.items].filter(item => item.kind === 'file')
         .map(item => supportsFileSystemAccessAPI ?
@@ -68,12 +67,10 @@ export function createFileDropHandler(el, onDrop) {
       for await (const handle of promises) {
         await traverse(handle);
       }
-
     }
     
     for (const file of [...dataTransfer.files]) {
       if (SUPPORTED_MIME_TYPES.has(file.type) || /\.(heif|heic)$/i.test(file.name)) {
-        console.log(file)
         files.push(file);
       }
     }
@@ -81,13 +78,10 @@ export function createFileDropHandler(el, onDrop) {
     onDrop(files);
   }
 
-
   document.onpaste = async e => {
     e.preventDefault();
     const dataTransfer = (e.clipboardData || window.clipboardData);
-    //console.log(dataTransfer.files)
     await handleDataTransfer(dataTransfer);
-    
   }
 
   el.ondrag = e => {
