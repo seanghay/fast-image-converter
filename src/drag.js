@@ -60,10 +60,12 @@ export function createFileDropHandler(el, onDrop) {
             await traverse(entry);
           }
         } else {
-          const file = await handle.getFile();
           // heic/heif is an exception
-          if (SUPPORTED_MIME_TYPES.has(file.type) || /\.(heif|heic)$/i.test(file.name)) {
-            files.push(file);
+          if ('getFile' in handle) {
+            const file = await handle.getFile();
+            if (SUPPORTED_MIME_TYPES.has(file.type) || /\.(heif|heic)$/i.test(file.name)) {
+              files.push(file);
+            }
           }
         }
       };
