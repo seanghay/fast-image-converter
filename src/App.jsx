@@ -84,6 +84,66 @@ function RadioGroup({ items, onChange, value }) {
 	);
 }
 
+export function ImageRenderer({ value, placeholder }) {
+	const [src, setSrc] = useState(null);
+
+	useEffect(() => {
+		if (!value) return;
+		if (!value.type.startsWith("image/")) return;
+
+		const url = URL.createObjectURL(value);
+		setSrc(url);
+		return () => URL.revokeObjectURL(url);
+	}, [value]);
+
+	const onViewPhoto = () => {
+		window.open(src, "_blank");
+	};
+
+	if (value == null) {
+		return (
+			<>
+				<div
+					style={{
+						border: "1px solid rgba(0,0,0,.05)",
+						width: "42px",
+						height: "42px",
+						borderRadius: ".36rem",
+						alignSelf: "center",
+						marginRight: ".5rem",
+						backgroundColor: "#eee",
+						overflow: "hidden",
+					}}
+				></div>
+			</>
+		);
+	}
+
+	return (
+		<img
+			tabIndex={-1}
+			onClick={onViewPhoto}
+			style={{
+				cursor: "pointer",
+				objectFit: "cover",
+				borderRadius: ".36rem",
+				alignSelf: "center",
+				marginRight: ".5rem",
+				backgroundColor: "#eee",
+				overflow: "hidden",
+				filter: placeholder ? "grayscale(1)" : null,
+				opacity: placeholder ? 0.4 : 1.0,
+				boxShadow: "0 0px 1px rgba(0,0,0,.25)",
+			}}
+			src={src}
+			width={44}
+			height={44}
+			decoding="async"
+			alt=""
+		/>
+	);
+}
+
 export function FileListView({ files }) {
 	return (
 		<div className="files">
@@ -99,6 +159,7 @@ export function FileListView({ files }) {
 					bufferedIndex,
 				}) => (
 					<div key={id} className="file">
+						<ImageRenderer value={blob ? blob : file} placeholder={!blob} />
 						<div className="file-info">
 							<div className="file-name truncate">
 								{bufferedIndex != null ? (
