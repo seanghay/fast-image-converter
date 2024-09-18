@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Adsense } from "@ctrl/react-adsense";
 
 const timestamp = new Date(BUILD_TIMESTAMP).toUTCString();
 
@@ -45,12 +46,19 @@ export default function Footer() {
 							{notifiable === "default"
 								? "Notify me once it's ready"
 								: notifiable === "denied"
-								? "Notification disabled"
-								: ""}
+									? "Notification disabled"
+									: ""}
 						</button>
 					</div>
 				) : null}
 			</footer>
+
+			<Adsense
+				client="ca-pub-2061560232525838"
+				slot="7315266358"
+				style={{ display: "block" }}
+				format="fluid"
+			/>
 		</>
 	);
 }

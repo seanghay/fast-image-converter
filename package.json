@@ -14,6 +14,7 @@
     "vite-plugin-pwa": "^0.14.6"
   },
   "dependencies": {
+    "@ctrl/react-adsense": "^1.7.0",
     "@jsquash/avif": "^1.0.2",
     "@jsquash/jpeg": "^1.1.5",
     "@jsquash/png": "^2.0.0",
