@@ -57,7 +57,6 @@ export default function Footer() {
 				client="ca-pub-2061560232525838"
 				slot="7315266358"
 				style={{ display: "block" }}
-				format="display"
 			/>
 		</>
 	);
