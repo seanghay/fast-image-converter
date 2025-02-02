@@ -1,83 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Fast Image Converter</title>
 
-		
-		<link rel="icon" href="/favicon.ico" />
-		<link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
-		
-		<link rel="mask-icon" href="/mask-icon.svg" color="#3CB371" />
-		<meta name="theme-color" content="#3CB371" />
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Fast Image Converter</title>
 
-		<meta
-			name="description"
-			content="A fast image to image converter supports popular formats such as .heif .heic .svg .avif .webp .png .jpg .pdf VectorDrawable"
-		/>
 
-		<meta name="twitter:card" content="summary_large_image" />
-		<meta name="twitter:image" content="https://floo.app/artwork.jpg" />
+	<link rel="icon" href="/favicon.ico" />
+	<link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
 
-		<meta property="og:url" content="https://floo.app/" />
-		<meta property="og:type" content="website" />
-		<meta property="og:image" content="https://floo.app/artwork.jpg" />
-		<meta property="og:title" content="Fast Image Converter / floo.app" />
-		<meta
-			property="og:description"
-			content="Supports popular formats such as .heif .heic .svg .avif .webp .png .jpg .pdf VectorDrawable"
-		/>
+	<link rel="mask-icon" href="/mask-icon.svg" color="#3CB371" />
+	<meta name="theme-color" content="#3CB371" />
 
-		<link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png" />
-		<link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png" />
-		<link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png" />
-		<link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png" />
-		<link
-			rel="apple-touch-icon"
-			sizes="114x114"
-			href="/apple-icon-114x114.png"
-		/>
-		<link
-			rel="apple-touch-icon"
-			sizes="120x120"
-			href="/apple-icon-120x120.png"
-		/>
-		<link
-			rel="apple-touch-icon"
-			sizes="144x144"
-			href="/apple-icon-144x144.png"
-		/>
-		<link
-			rel="apple-touch-icon"
-			sizes="152x152"
-			href="/apple-icon-152x152.png"
-		/>
-		<link
-			rel="apple-touch-icon"
-			sizes="180x180"
-			href="/apple-icon-180x180.png"
-		/>
-		
-		<link
-			rel="icon"
-			type="image/png"
-			sizes="192x192"
-			href="/android-icon-192x192.png"
-		/>
+	<meta name="description"
+		content="A fast image to image converter supports popular formats such as .heif .heic .svg .avif .webp .png .jpg .pdf VectorDrawable" />
 
-		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-		<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
-		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-		<meta name="msapplication-TileColor" content="#3CB371" />
-		<meta name="msapplication-TileImage" content="/ms-icon-144x144.png" />
-		
-		<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2061560232525838"
-     crossorigin="anonymous"></script>
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:image" content="https://floo.app/artwork.jpg" />
 
-	</head>
-	<body>
-		<div id="app"></div>
-		<script type="module" src="/src/main.jsx"></script>
-	</body>
+	<meta property="og:url" content="https://floo.app/" />
+	<meta property="og:type" content="website" />
+	<meta property="og:image" content="https://floo.app/artwork.jpg" />
+	<meta property="og:title" content="Fast Image Converter / floo.app" />
+	<meta property="og:description"
+		content="Supports popular formats such as .heif .heic .svg .avif .webp .png .jpg .pdf VectorDrawable" />
+
+	<link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png" />
+	<link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png" />
+	<link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png" />
+	<link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png" />
+	<link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png" />
+	<link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png" />
+	<link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png" />
+	<link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png" />
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png" />
+
+	<link rel="icon" type="image/png" sizes="192x192" href="/android-icon-192x192.png" />
+
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+	<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+	<meta name="msapplication-TileColor" content="#3CB371" />
+	<meta name="msapplication-TileImage" content="/ms-icon-144x144.png" />
+
+	<!-- Cloudflare Web Analytics -->
+	<script defer src='https://static.cloudflareinsights.com/beacon.min.js'
+		data-cf-beacon='{"token": "500615b45edb449eb2c8bbe01eadb384"}'></script>
+	<!-- End Cloudflare Web Analytics -->
+
+</head>
+
+<body>
+	<div id="app"></div>
+	<script type="module" src="/src/main.jsx"></script>
+</body>
+
 </html>
