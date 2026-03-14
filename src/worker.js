@@ -159,7 +159,7 @@ async function decode_pdf(data) {
   const imageDataCollection = [];
   for (let i = 1; i <= doc.numPages; i++) {
     const page = await doc.getPage(i);
-    const pageViewport = page.getViewport({ scale: 2 });
+    const pageViewport = page.getViewport({ scale: 4 });
     const canvas = new OffscreenCanvas(pageViewport.width, pageViewport.height);
     const ctx = canvas.getContext('2d');
     await page.render({
